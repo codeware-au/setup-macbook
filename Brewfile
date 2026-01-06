@@ -20,5 +20,5 @@ cask "iterm2"
 cask "microsoft-edge"
 cask "postman"
 cask "rider"
-cask "vscode"
+cask "visual-studio-code"
 mas "Xcode", id: 497799835
