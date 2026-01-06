@@ -1,4 +1,4 @@
-# Monster Army Development Environment Setup
+# Two Circles Developer Macbook Setup
 
 Quick setup script for onboarding new developers on macOS.
 
