@@ -1,4 +1,3 @@
-brew "certbot"
 brew "commitizen"
 brew "php"
 brew "composer"
@@ -21,4 +20,5 @@ cask "iterm2"
 cask "microsoft-edge"
 cask "postman"
 cask "rider"
+cask "vscode"
 mas "Xcode", id: 497799835
