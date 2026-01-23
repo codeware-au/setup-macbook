@@ -18,7 +18,7 @@ fi
 # Update and install from Brewfile
 echo "Updating Homebrew and installing packages..."
 brew update
-brew bundle install --file="$(dirname "$0")/Brewfile"
+brew bundle install -v --file="$(dirname "$0")/Brewfile"
 brew cleanup
 
 echo "✅ Setup complete! You can see everything installed in the Applications folder"
