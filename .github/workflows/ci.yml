@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  shellcheck:
+    name: ShellCheck Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          scandir: .
+          additional_files: install.sh
+
+  brewfile-validation:
+    name: Validate Brewfile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for duplicate brew entries
+        run: |
+          dupes=$(grep '^brew ' Brewfile | sort | uniq -d)
+          if [ -n "$dupes" ]; then
+            echo "::error::Duplicate brew entries found: $dupes"
+            exit 1
+          fi
+      - name: Check for duplicate cask entries
+        run: |
+          dupes=$(grep '^cask ' Brewfile | sort | uniq -d)
+          if [ -n "$dupes" ]; then
+            echo "::error::Duplicate cask entries found: $dupes"
+            exit 1
+          fi
+      - name: Validate Brewfile syntax
+        run: |
+          errors=0
+          while IFS= read -r line; do
+            [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+            if ! [[ "$line" =~ ^brew\ \".+\"$ ]] &&
+               ! [[ "$line" =~ ^cask\ \".+\"$ ]] &&
+               ! [[ "$line" =~ ^mas\ \".+\",\ id:\ [0-9]+$ ]] &&
+               ! [[ "$line" =~ ^tap\ \".+\"$ ]]; then
+              echo "::error::Invalid Brewfile line: $line"
+              errors=$((errors + 1))
+            fi
+          done < Brewfile
+          exit $errors
+
+  bats-tests:
+    name: BATS Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install BATS
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bats
+      - name: Run BATS tests
+        run: bats tests/
